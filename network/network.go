@@ -30,6 +30,45 @@ func GetBalancesBlock(rp *rocketpool.RocketPool, opts *bind.CallOpts) (uint64, e
 }
 
 
+func GetTotalETHBalance(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error) {
+    rocketNetworkBalances, err := getRocketNetworkBalances(rp)
+    if err != nil {
+        return nil, err
+    }
+    totalETH := new(*big.Int)
+    if err := rocketNetworkBalances.Call(opts, totalETH, "getTotalETHBalance"); err != nil {
+        return nil, fmt.Errorf("Could not get total ETH balance: %w", err)
+    }
+    return *totalETH, nil
+}
+
+
+func GetStakingETHBalance(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error) {
+    rocketNetworkBalances, err := getRocketNetworkBalances(rp)
+    if err != nil {
+        return nil, err
+    }
+    stakingETH := new(*big.Int)
+    if err := rocketNetworkBalances.Call(opts, stakingETH, "getStakingETHBalance"); err != nil {
+        return nil, fmt.Errorf("Could not get staking ETH balance: %w", err)
+    }
+    return *stakingETH, nil
+}
+
+
+func GetTotalRETHSupply(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error) {
+    rocketNetworkBalances, err := getRocketNetworkBalances(rp)
+    if err != nil {
+        return nil, err
+    }
+    totalRETH := new(*big.Int)
+    if err := rocketNetworkBalances.Call(opts, totalRETH, "getTotalRETHSupply"); err != nil {
+        return nil, fmt.Errorf("Could not get total rETH balance: %w", err)
+    }
+    return *totalRETH, nil
+}
+
+
 // Get the current network node commission rate
 func GetNodeFee(rp *rocketpool.RocketPool, opts *bind.CallOpts) (float64, error) {
     rocketNetworkFees, err := getRocketNetworkFees(rp)
@@ -119,4 +158,3 @@ func getRocketNetworkWithdrawal(rp *rocketpool.RocketPool) (*bind.BoundContract,
     defer rocketNetworkWithdrawalLock.Unlock()
     return rp.GetContract("rocketNetworkWithdrawal")
 }
-
