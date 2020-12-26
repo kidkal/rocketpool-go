@@ -504,6 +504,21 @@ func GetQueueTotalLength(rp *rocketpool.RocketPool, opts *bind.CallOpts) (uint64
 }
 
 
+// Get the length of a queue
+// Returns 0 for invalid queues
+func GetQueueLength(rp *rocketpool.RocketPool, depositType rptypes.MinipoolDeposit, opts *bind.CallOpts) (uint64, error) {
+    rocketMinipoolQueue, err := getRocketMinipoolQueue(rp)
+    if err != nil {
+        return 0, err
+    }
+    length := new(*big.Int)
+    if err := rocketMinipoolQueue.Call(opts, length, "getLength", uint8(depositType)); err != nil {
+        return 0, fmt.Errorf("Could not get minipool queue length %s: %w", depositType, err)
+    }
+    return (*length).Uint64(), nil
+}
+
+
 // Get the total capacity of the minipool queue
 func GetQueueTotalCapacity(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error) {
     rocketMinipoolQueue, err := getRocketMinipoolQueue(rp)
@@ -579,4 +594,3 @@ func getRocketMinipoolStatus(rp *rocketpool.RocketPool) (*bind.BoundContract, er
     defer rocketMinipoolStatusLock.Unlock()
     return rp.GetContract("rocketMinipoolStatus")
 }
-

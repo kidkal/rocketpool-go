@@ -27,6 +27,20 @@ func GetBalance(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error
 }
 
 
+// Excess deposit pool balance (in excess of minipool queue capacity)
+func GetExcessBalance(rp *rocketpool.RocketPool, opts *bind.CallOpts) (*big.Int, error) {
+    rocketDepositPool, err := getRocketDepositPool(rp)
+    if err != nil {
+        return nil, err
+    }
+    balance := new(*big.Int)
+    if err := rocketDepositPool.Call(opts, balance, "getExcessBalance"); err != nil {
+        return nil, fmt.Errorf("Could not get deposit pool excess balance: %w", err)
+    }
+    return *balance, nil
+}
+
+
 // Assign deposits
 func AssignDeposits(rp *rocketpool.RocketPool, opts *bind.TransactOpts) (*types.Receipt, error) {
     rocketDepositPool, err := getRocketDepositPool(rp)
